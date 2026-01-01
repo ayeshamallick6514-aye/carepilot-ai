@@ -22,8 +22,8 @@ with col2:
     symptom = st.slider("Symptom Severity", 0.0, 1.0)
     if st.button("Generate Guidance"):
         st.success("Guidance generated successfully ✅")
-        if confidence == "High":
-            st.success("Confidence Level: High")
+if confidence == "High":
+    st.success("Confidence Level: High")
 elif confidence == "Medium":
     st.warning("Confidence Level: Medium")
 else:
