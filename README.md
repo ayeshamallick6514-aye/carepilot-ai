@@ -48,4 +48,9 @@ health guidance using patient vitals and grounded medical knowledge.
 <img width="1920" height="1080" alt="Screenshot 2026-01-01 172748" src="https://github.com/user-attachments/assets/fc01a37b-705b-4696-9b6d-90ecd3481338" />
 <img width="1920" height="1080" alt="Screenshot 2026-01-01 172819" src="https://github.com/user-attachments/assets/aa0522f0-ae4a-4b09-a00e-70730a8cdf9f" />
 
+## 🌐 Deployment
+
+The application is deployed using **Streamlit Community Cloud**
+and is accessible via the live demo link above.
+
 
