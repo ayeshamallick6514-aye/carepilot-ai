@@ -22,14 +22,13 @@ with col2:
     symptom = st.slider("Symptom Severity", 0.0, 1.0)
     if st.button("Generate Guidance"):
         st.success("Guidance generated successfully ✅")
-    if confidence == "High":
+        if confidence == "High":
         st.success("Confidence Level: High")
-    elif confidence == "Medium":
-        st.warning("Confidence Level: Medium")
-    else:
-        st.error("Confidence Level: Low")
-        with st.expander("🧠 Personalized Guidance"):
-            st.markdown(explanation)
+elif confidence == "Medium":
+    st.warning("Confidence Level: Medium")
+else:
+    st.error("Confidence Level: Low")
+
 
 with st.expander("📚 Medical Context Used"):
     st.write(context)
