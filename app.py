@@ -30,11 +30,11 @@ with col2:
             st.error("Confidence Level: Low")
             
             with st.expander("📚 Medical Context Used"):
-                st.write(context)
+            st.write(context)
                 with st.expander("⚠️ Disclaimer"):
-                    st.write("This is educational guidance only.")
-                    st.sidebar.title("CarePilot AI")
-                    st.sidebar.info("""
+                st.write("This is educational guidance only.")
+                st.sidebar.title("CarePilot AI")
+                st.sidebar.info("""
 An explainable HealthTech AI system.
 Built with safety-first design.
 """)
