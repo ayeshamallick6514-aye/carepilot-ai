@@ -33,8 +33,8 @@ with col2:
 
 with st.expander("📚 Medical Context Used"):
     st.write(context)
-
-with st.expander("⚠️ Disclaimer"):
+    
+    with st.expander("⚠️ Disclaimer"):
     st.write("This is educational guidance only.")
     st.sidebar.title("CarePilot AI")
     st.sidebar.info("""
