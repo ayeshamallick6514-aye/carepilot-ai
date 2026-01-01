@@ -25,7 +25,7 @@ with col2:
     if confidence == "High":
         st.success("Confidence Level: High")
     elif confidence == "Medium":
-    st.warning("Confidence Level: Medium")
+        st.warning("Confidence Level: Medium")
 else:
     st.error("Confidence Level: Low")
     with st.expander("🧠 Personalized Guidance"):
