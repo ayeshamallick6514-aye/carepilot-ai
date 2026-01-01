@@ -23,11 +23,11 @@ with col2:
     if st.button("Generate Guidance"):
         st.success("Guidance generated successfully ✅")
         if confidence == "High":
-        st.success("Confidence Level: High")
+            st.success("Confidence Level: High")
 elif confidence == "Medium":
-    st.warning("Confidence Level: Medium")
+st.warning("Confidence Level: Medium")
 else:
-    st.error("Confidence Level: Low")
+st.error("Confidence Level: Low")
 
 
 with st.expander("📚 Medical Context Used"):
