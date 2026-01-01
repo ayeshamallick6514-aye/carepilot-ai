@@ -26,10 +26,10 @@ with col2:
         st.success("Confidence Level: High")
     elif confidence == "Medium":
         st.warning("Confidence Level: Medium")
-else:
-    st.error("Confidence Level: Low")
-    with st.expander("🧠 Personalized Guidance"):
-    st.markdown(explanation)
+    else:
+        st.error("Confidence Level: Low")
+        with st.expander("🧠 Personalized Guidance"):
+            st.markdown(explanation)
 
 with st.expander("📚 Medical Context Used"):
     st.write(context)
