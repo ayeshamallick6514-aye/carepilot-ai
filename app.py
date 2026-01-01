@@ -1,4 +1,51 @@
 import streamlit as st
+
+st.set_page_config(
+    page_title="CarePilot AI",
+    page_icon="🩺",
+    layout="wide"
+)
+st.title("🩺 CarePilot AI")
+st.caption("Explainable, Confidence-Aware Health Guidance System")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("🧑 Patient Details")
+    age = st.number_input("Age", 18, 100)
+    glucose = st.number_input("Glucose (mg/dL)", 70, 300)
+    bp = st.number_input("Blood Pressure", 80, 200)
+
+with col2:
+    st.subheader("📊 Health Indicators")
+    bmi = st.number_input("BMI", 15.0, 45.0)
+    symptom = st.slider("Symptom Severity", 0.0, 1.0)
+    if st.button("Generate Guidance"):
+    st.success("Guidance generated successfully ✅")
+    if confidence == "High":
+    st.success("Confidence Level: High")
+elif confidence == "Medium":
+    st.warning("Confidence Level: Medium")
+else:
+    st.error("Confidence Level: Low")
+    with st.expander("🧠 Personalized Guidance"):
+    st.markdown(explanation)
+
+with st.expander("📚 Medical Context Used"):
+    st.write(context)
+
+with st.expander("⚠️ Disclaimer"):
+    st.write("This is educational guidance only.")
+    st.sidebar.title("CarePilot AI")
+st.sidebar.info("""
+An explainable HealthTech AI system.
+Built with safety-first design.
+""")
+
+
+
+
+
 import numpy as np
 import random
 import faiss
