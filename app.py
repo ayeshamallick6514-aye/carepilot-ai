@@ -139,4 +139,18 @@ if st.button("Generate Guidance"):
 
     st.success("Guidance generated successfully ✅")
 
-    if confidence ==
+    if confidence == "High":
+        st.success("Confidence Level: High")
+    elif confidence == "Medium":
+        st.warning("Confidence Level: Medium")
+    else:
+        st.error("Confidence Level: Low")
+
+    with st.expander("🧠 Personalized Guidance"):
+        st.markdown(explain(patient, advice, context, confidence))
+
+    with st.expander("📚 Medical Context Used"):
+        st.write(context)
+
+    with st.expander("⚠️ Disclaimer"):
+        st.write("This is educational guidance only.")
