@@ -21,10 +21,10 @@ with col2:
     bmi = st.number_input("BMI", 15.0, 45.0)
     symptom = st.slider("Symptom Severity", 0.0, 1.0)
     if st.button("Generate Guidance"):
-    st.success("Guidance generated successfully ✅")
+        st.success("Guidance generated successfully ✅")
     if confidence == "High":
-    st.success("Confidence Level: High")
-elif confidence == "Medium":
+        st.success("Confidence Level: High")
+    elif confidence == "Medium":
     st.warning("Confidence Level: Medium")
 else:
     st.error("Confidence Level: Low")
@@ -37,7 +37,7 @@ with st.expander("📚 Medical Context Used"):
 with st.expander("⚠️ Disclaimer"):
     st.write("This is educational guidance only.")
     st.sidebar.title("CarePilot AI")
-st.sidebar.info("""
+    st.sidebar.info("""
 An explainable HealthTech AI system.
 Built with safety-first design.
 """)
