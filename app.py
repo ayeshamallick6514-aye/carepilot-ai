@@ -1,8 +1,5 @@
 import streamlit as st
 import numpy as np
-import random
-import faiss
-from sentence_transformers import SentenceTransformer
 
 # ---------------- PAGE CONFIG ---------------- #
 
@@ -12,145 +9,177 @@ st.set_page_config(
     layout="wide"
 )
 
+# ---------------- ANIMATED SPACE UI ---------------- #
+
+st.markdown(
+    """
+    <style>
+    /* Animated space background */
+    body {
+        background: radial-gradient(circle at top, #0f2027, #203a43, #000000);
+        background-size: 400% 400%;
+        animation: spaceMove 20s ease infinite;
+        color: white;
+    }
+
+    @keyframes spaceMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Glass effect containers */
+    .block-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        padding: 2rem;
+        animation: fadeIn 1.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: white;
+        border-radius: 12px;
+        padding: 0.6em 1.5em;
+        font-weight: bold;
+        transition: transform 0.2s ease;
+    }
+
+    .stButton > button:hover {
+        transform: scale(1.05);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # ---------------- SIDEBAR ---------------- #
 
-st.sidebar.title("CarePilot AI")
+st.sidebar.title("🩺 CarePilot AI")
 st.sidebar.info("""
-An explainable HealthTech AI system.
-Built with safety-first design.
+Explainable HealthTech AI  
+Educational • Safety-First  
+No medical diagnosis
 """)
 
-# ---------------- CORE LOGIC ---------------- #
+# ---------------- LOGIC ---------------- #
 
-def health_score(patient):
-    score = 100
-    score -= max(0, patient["glucose"] - 110) * 0.3
-    score -= max(0, patient["bp"] - 120) * 0.2
-    score -= max(0, patient["bmi"] - 25) * 0.5
-    score -= patient["symptom_score"] * 20
-    return max(score, 0)
+def calculate_bmi(weight, height):
+    h = height / 100
+    return weight / (h * h)
 
-def apply_advice(patient, advice):
-    patient = patient.copy()
-    if "glucose" in advice.lower():
-        patient["glucose"] -= np.random.uniform(10, 25)
-    if "pressure" in advice.lower():
-        patient["bp"] -= np.random.uniform(8, 15)
-    if "weight" in advice.lower():
-        patient["bmi"] -= np.random.uniform(1, 3)
-    patient["symptom_score"] *= np.random.uniform(0.6, 0.9)
-    return patient
-
-def estimate_confidence(before, after):
-    improvement = after - before
-    if improvement >= 15:
-        return "High"
-    elif improvement >= 5:
-        return "Medium"
+def bmi_category(bmi):
+    if bmi < 18.5:
+        return "Underweight"
+    elif bmi < 25:
+        return "Normal"
+    elif bmi < 30:
+        return "Overweight"
     else:
-        return "Low"
+        return "Obese"
 
-def dynamic_policy(patient):
-    advice = []
-    if patient["glucose"] > 150:
-        advice.append("glucose management")
-    if patient["bp"] > 140:
-        advice.append("blood pressure control")
-    if patient["bmi"] > 25:
-        advice.append("weight management")
-    if not advice:
-        advice.append("general wellness")
-    return "Focus areas: " + ", ".join(advice)
+def health_score(glucose, bp, bmi, symptom):
+    score = 100
+    score -= max(0, glucose - 110) * 0.3
+    score -= max(0, bp - 120) * 0.2
+    score -= max(0, bmi - 25) * 0.5
+    score -= symptom * 20
+    return max(0, int(score))
 
-# ---------------- RAG ---------------- #
+def analyze_risk(symptoms):
+    risks = []
+    if "Frequent thirst" in symptoms or "Fatigue" in symptoms:
+        risks.append("Possible metabolic imbalance")
+    if "Chest discomfort" in symptoms or "Shortness of breath" in symptoms:
+        risks.append("Possible cardiovascular strain")
+    if "Sudden weight gain/loss" in symptoms:
+        risks.append("Possible hormonal imbalance")
+    if not risks:
+        risks.append("No major risk indicators detected")
+    return risks
 
-docs = [
-    "High glucose levels increase diabetes risk. Lifestyle changes help.",
-    "High blood pressure affects heart health. Monitoring is advised.",
-    "High BMI is linked to metabolic risks. Gradual weight control helps.",
-    "Wellness habits improve long-term health."
-]
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
-doc_embeddings = model.encode(docs)
-index = faiss.IndexFlatL2(doc_embeddings.shape[1])
-index.add(doc_embeddings)
-
-def retrieve_context(query):
-    q_emb = model.encode([query])
-    _, idx = index.search(q_emb, 1)
-    return docs[idx[0][0]]
-
-def explain(patient, advice, context, confidence):
-    tone = random.choice(["calm", "supportive", "informative"])
-    return f"""
-**Tone:** {tone}
-
-**Patient Summary**
-- Age: {patient['age']}
-- Glucose: {patient['glucose']:.1f}
-- BP: {patient['bp']:.1f}
-- BMI: {patient['bmi']:.1f}
-
-**Advice**
-{advice}
-
-**Medical Context**
-{context}
-
-**Confidence Level**
-{confidence}
-
-⚠️ *This is educational guidance only and not a medical diagnosis.*
-"""
+def recommendations(glucose, bp, bmi):
+    rec = []
+    if glucose > 140:
+        rec.append("Reduce sugar intake and monitor glucose weekly")
+    if bp > 140:
+        rec.append("Lower salt intake and manage stress")
+    if bmi > 25:
+        rec.append("Adopt gradual weight control via diet and walking")
+    if not rec:
+        rec.append("Maintain current healthy lifestyle")
+    return rec
 
 # ---------------- UI ---------------- #
 
 st.title("🩺 CarePilot AI")
-st.caption("Explainable, Confidence-Aware Health Guidance System")
+st.caption("Explainable • Confidence-Aware • AI-Assisted Health Guidance")
 
-col1, col2 = st.columns(2)
+tab1, tab2, tab3 = st.tabs(["🧑 Patient Input", "📊 Analysis", "📋 Guidance"])
 
-with col1:
-    st.subheader("🧑 Patient Details")
-    age = st.number_input("Age", 18, 100)
-    glucose = st.number_input("Glucose (mg/dL)", 70, 300)
-    bp = st.number_input("Blood Pressure (systolic)", 80, 200)
+with tab1:
+    col1, col2 = st.columns(2)
 
-with col2:
-    st.subheader("📊 Health Indicators")
-    bmi = st.number_input("BMI", 15.0, 45.0)
-    symptom = st.slider("Symptom Severity", 0.0, 1.0)
+    with col1:
+        age = st.number_input("Age", 18, 100)
+        height = st.number_input("Height (cm)", 120, 220)
+        weight = st.number_input("Weight (kg)", 30, 200)
 
-if st.button("Generate Guidance"):
-    patient = {
-        "age": age,
-        "glucose": glucose,
-        "bp": bp,
-        "bmi": bmi,
-        "symptom_score": symptom
-    }
+    with col2:
+        glucose = st.number_input("Glucose (mg/dL)", 70, 300)
+        bp = st.number_input("Blood Pressure (systolic)", 80, 200)
+        symptom = st.slider("Overall Symptom Severity", 0.0, 1.0)
 
-    advice = dynamic_policy(patient)
-    before = health_score(patient)
-    after = health_score(apply_advice(patient, advice))
-    confidence = estimate_confidence(before, after)
-    context = retrieve_context(advice)
+    symptoms = st.multiselect(
+        "Select symptoms",
+        [
+            "Frequent thirst",
+            "Fatigue",
+            "Headache",
+            "Chest discomfort",
+            "Shortness of breath",
+            "Sudden weight gain/loss",
+            "Blurred vision"
+        ]
+    )
 
-    st.success("Guidance generated successfully ✅")
+    run = st.button("🚀 Generate Health Guidance")
 
-    if confidence == "High":
-        st.success("Confidence Level: High")
-    elif confidence == "Medium":
-        st.warning("Confidence Level: Medium")
-    else:
-        st.error("Confidence Level: Low")
+if run:
+    bmi = calculate_bmi(weight, height)
+    bmi_state = bmi_category(bmi)
+    score = health_score(glucose, bp, bmi, symptom)
+    risks = analyze_risk(symptoms)
+    recs = recommendations(glucose, bp, bmi)
 
-    with st.expander("🧠 Personalized Guidance"):
-        st.markdown(explain(patient, advice, context, confidence))
+    with tab2:
+        st.subheader("📊 Health Summary")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("BMI", round(bmi, 2), bmi_state)
+        c2.metric("Health Score", score)
+        c3.metric("Symptom Severity", symptom)
+        st.progress(score / 100)
 
-    with st.expander("📚 Medical Context Used"):
-        st.write(context)
+        with st.expander("⚠️ Risk Indicators"):
+            for r in risks:
+                st.write("•", r)
 
-    with st.expander("⚠️ Disclaimer"):
-        st.write("This is educational guidance only.")
+    with tab3:
+        st.subheader("📋 Recommendations")
+        for r in recs:
+            st.write("✅", r)
+
+        with st.expander("ℹ️ Usage Note"):
+            st.write("Follow suggestions gradually and consult professionals if symptoms persist.")
+
+        with st.expander("⚠️ Disclaimer"):
+            st.write("This system is educational only and not a medical diagnostic tool.")
+else:
+    st.info("Enter details and click **Generate Health Guidance** to begin.")
