@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 
-# ---------------- PAGE CONFIG ---------------- #
+# ================= PAGE CONFIG ================= #
 
 st.set_page_config(
     page_title="CarePilot AI",
@@ -9,17 +9,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- ANIMATED SPACE + PARTICLES UI ---------------- #
+# ================= PARTICLE STAR BACKGROUND ================= #
 
 st.markdown(
     """
     <style>
-    /* App background */
     .stApp {
         background: transparent;
     }
 
-    /* Fullscreen canvas */
     #starfield {
         position: fixed;
         top: 0;
@@ -29,27 +27,25 @@ st.markdown(
         z-index: -1;
     }
 
-    /* Glass container */
     .block-container {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(14px);
         border-radius: 16px;
         padding: 2rem;
-        animation: fadeIn 1.2s ease-in;
+        animation: fadeIn 1s ease-in;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Buttons */
     .stButton > button {
         background: linear-gradient(90deg, #00c6ff, #0072ff);
         color: white;
         border-radius: 12px;
-        padding: 0.6em 1.5em;
-        font-weight: bold;
+        padding: 0.6em 1.6em;
+        font-weight: 600;
         transition: transform 0.2s ease;
     }
 
@@ -64,58 +60,56 @@ st.markdown(
     const canvas = document.getElementById("starfield");
     const ctx = canvas.getContext("2d");
 
-    let width, height;
+    let w, h;
     let stars = [];
 
     function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
     }
     window.addEventListener("resize", resize);
     resize();
 
-    function createStars(count) {
+    function initStars(count) {
         stars = [];
         for (let i = 0; i < count; i++) {
             stars.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                radius: Math.random() * 1.2,
-                speed: Math.random() * 0.25 + 0.05
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.2,
+                s: Math.random() * 0.25 + 0.05
             });
         }
     }
 
-    createStars(160);
+    initStars(180);
 
-    function drawStars() {
-        ctx.clearRect(0, 0, width, height);
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
         ctx.shadowBlur = 6;
         ctx.shadowColor = "white";
 
         stars.forEach(star => {
             ctx.beginPath();
-            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
             ctx.fill();
-
-            star.y += star.speed;
-            if (star.y > height) {
+            star.y += star.s;
+            if (star.y > h) {
                 star.y = 0;
-                star.x = Math.random() * width;
+                star.x = Math.random() * w;
             }
         });
 
-        requestAnimationFrame(drawStars);
+        requestAnimationFrame(animate);
     }
-
-    drawStars();
+    animate();
     </script>
     """,
     unsafe_allow_html=True
 )
 
-# ---------------- SIDEBAR ---------------- #
+# ================= SIDEBAR ================= #
 
 st.sidebar.title("🩺 CarePilot AI")
 st.sidebar.info("""
@@ -124,11 +118,10 @@ Educational • Safety-First
 No medical diagnosis
 """)
 
-# ---------------- LOGIC ---------------- #
+# ================= LOGIC ================= #
 
 def calculate_bmi(weight, height):
-    h = height / 100
-    return weight / (h * h)
+    return weight / ((height / 100) ** 2)
 
 def bmi_category(bmi):
     if bmi < 18.5:
@@ -137,8 +130,7 @@ def bmi_category(bmi):
         return "Normal"
     elif bmi < 30:
         return "Overweight"
-    else:
-        return "Obese"
+    return "Obese"
 
 def health_score(glucose, bp, bmi, symptom):
     score = 100
@@ -148,31 +140,31 @@ def health_score(glucose, bp, bmi, symptom):
     score -= symptom * 20
     return max(0, int(score))
 
-def analyze_risk(symptoms):
+def analyze_risks(symptoms):
     risks = []
     if "Frequent thirst" in symptoms or "Fatigue" in symptoms:
-        risks.append("Possible metabolic imbalance")
+        risks.append("Metabolic risk indicators")
     if "Chest discomfort" in symptoms or "Shortness of breath" in symptoms:
-        risks.append("Possible cardiovascular strain")
+        risks.append("Cardiovascular strain indicators")
     if "Sudden weight gain/loss" in symptoms:
         risks.append("Possible hormonal imbalance")
     if not risks:
-        risks.append("No major risk indicators detected")
+        risks.append("No major risk patterns detected")
     return risks
 
 def recommendations(glucose, bp, bmi):
-    rec = []
+    recs = []
     if glucose > 140:
-        rec.append("Reduce sugar intake and monitor glucose weekly")
+        recs.append("Reduce refined sugar intake and monitor glucose weekly")
     if bp > 140:
-        rec.append("Lower salt intake and manage stress")
+        recs.append("Lower salt intake and practice stress management")
     if bmi > 25:
-        rec.append("Adopt gradual weight control via diet and walking")
-    if not rec:
-        rec.append("Maintain current healthy lifestyle")
-    return rec
+        recs.append("Adopt gradual weight control through diet and walking")
+    if not recs:
+        recs.append("Maintain current healthy lifestyle habits")
+    return recs
 
-# ---------------- UI ---------------- #
+# ================= UI ================= #
 
 st.title("🩺 CarePilot AI")
 st.caption("Explainable • Confidence-Aware • AI-Assisted Health Guidance")
@@ -180,14 +172,61 @@ st.caption("Explainable • Confidence-Aware • AI-Assisted Health Guidance")
 tab1, tab2, tab3 = st.tabs(["🧑 Patient Input", "📊 Analysis", "📋 Guidance"])
 
 with tab1:
-    col1, col2 = st.columns(2)
+    c1, c2 = st.columns(2)
 
-    with col1:
+    with c1:
         age = st.number_input("Age", 18, 100)
         height = st.number_input("Height (cm)", 120, 220)
         weight = st.number_input("Weight (kg)", 30, 200)
 
-    with col2:
+    with c2:
         glucose = st.number_input("Glucose (mg/dL)", 70, 300)
         bp = st.number_input("Blood Pressure (systolic)", 80, 200)
-        s
+        symptom = st.slider("Overall Symptom Severity", 0.0, 1.0)
+
+    symptoms = st.multiselect(
+        "Select symptoms you are experiencing",
+        [
+            "Frequent thirst",
+            "Fatigue",
+            "Headache",
+            "Chest discomfort",
+            "Shortness of breath",
+            "Sudden weight gain/loss",
+            "Blurred vision"
+        ]
+    )
+
+    run = st.button("🚀 Generate Health Guidance")
+
+if run:
+    bmi = calculate_bmi(weight, height)
+    bmi_state = bmi_category(bmi)
+    score = health_score(glucose, bp, bmi, symptom)
+    risks = analyze_risks(symptoms)
+    recs = recommendations(glucose, bp, bmi)
+
+    with tab2:
+        st.subheader("📊 Health Summary")
+        x1, x2, x3 = st.columns(3)
+        x1.metric("BMI", round(bmi, 2), bmi_state)
+        x2.metric("Health Score", score)
+        x3.metric("Symptom Severity", symptom)
+        st.progress(score / 100)
+
+        with st.expander("⚠️ Risk Indicators"):
+            for r in risks:
+                st.write("•", r)
+
+    with tab3:
+        st.subheader("📋 Personalized Recommendations")
+        for r in recs:
+            st.write("✅", r)
+
+        with st.expander("ℹ️ Usage Note"):
+            st.write("Track vitals consistently and consult professionals if symptoms persist.")
+
+        with st.expander("⚠️ Disclaimer"):
+            st.write("This system is educational only and does not provide medical diagnosis.")
+else:
+    st.info("Enter your details and click **Generate Health Guidance** to begin.")
