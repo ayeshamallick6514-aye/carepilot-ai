@@ -14,13 +14,77 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Animated space background */
-    body {
-        background: radial-gradient(circle at top, #0f2027, #203a43, #000000);
-        background-size: 400% 400%;
-        animation: spaceMove 20s ease infinite;
-        color: white;
+    /* Make Streamlit background transparent */
+    .stApp {
+        background: transparent;
     }
+
+    /* Canvas full screen */
+    #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+    }
+    </style>
+
+    <canvas id="starfield"></canvas>
+
+    <script>
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+
+    let width, height;
+    let stars = [];
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function createStars(count) {
+        stars = [];
+        for (let i = 0; i < count; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 1.2,
+                speed: Math.random() * 0.3 + 0.05
+            });
+        }
+    }
+
+    createStars(160);
+
+    function drawStars() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = "white";
+
+        stars.forEach(star => {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            star.y += star.speed;
+            if (star.y > height) {
+                star.y = 0;
+                star.x = Math.random() * width;
+            }
+        });
+
+        requestAnimationFrame(drawStars);
+    }
+
+    drawStars();
+    </script>
+    """,
+    unsafe_allow_html=True
+)
+
 
     @keyframes spaceMove {
         0% { background-position: 0% 50%; }
